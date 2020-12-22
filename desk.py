@@ -1,4 +1,3 @@
 class Desk:
-    def __init__(self, title, year=None):
-        self.title = title
-        self.year = year
+    def __init__(self, deskName):
+        self.deskName = deskName

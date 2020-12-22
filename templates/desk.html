@@ -6,14 +6,8 @@
     <table class="table">
       <tr>
         <th>Title:</th>
-        <td>{{ desk.title }}</td>
+        <td>{{ desk.deskName }}</td>
       </tr>
-      {% if desk.year %}
-      <tr>
-        <th>Year:</th>
-        <td>{{ desk.year }}</td>
-      </tr>
-      {% endif %}
     </table>
 
     {% if current_user.is_authenticated %}

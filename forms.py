@@ -7,15 +7,8 @@ from datetime import datetime
 
 
 class DeskEditForm(FlaskForm):
-    title = StringField("Title", validators=[DataRequired()])
+    deskName = StringField("Title", validators=[DataRequired()])
 
-    year = IntegerField(
-        "Year",
-        validators=[
-            Optional(),
-            NumberRange(min=1887, max=datetime.now().year),
-        ],
-    )
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
 

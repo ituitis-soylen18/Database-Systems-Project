@@ -39,10 +39,9 @@ def desk_add_page():
         abort(401)
     form = DeskEditForm()
     if form.validate_on_submit():
-        title = form.data["title"]
-        year = form.data["year"]
-        desk = Desk(title, year=year)
+        deskName = form.data["deskName"]
         db = current_app.config["db"]
+        desk = Desk(deskName)
         desk_key = db.add_desk(desk)
         flash("Desk added.")
         return redirect(url_for("desk_page", desk_key=desk_key))
@@ -55,14 +54,12 @@ def desk_edit_page(desk_key):
     desk = db.get_desk(desk_key)
     form = DeskEditForm()
     if form.validate_on_submit():
-        title = form.data["title"]
-        year = form.data["year"]
-        desk = Desk(title, year=year)
+        deskName = form.data["deskName"]
+        desk = Desk(deskName)
         db.update_desk(desk_key, desk)
         flash("Desk data updated.")
         return redirect(url_for("desk_page", desk_key=desk_key))
-    form.title.data = desk.title
-    form.year.data = desk.year if desk.year else ""
+    form.deskName.data = desk.deskName
     return render_template("desk_edit.html", form=form)
 
 def login_page():

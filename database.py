@@ -22,12 +22,12 @@ class Database:
         desk = self.desks.get(desk_key)
         if desk is None:
             return None
-        desk_ = Desk(desk.title, year=desk.year)
+        desk_ = Desk(desk.deskName)
         return desk_
 
     def get_desks(self):
         desks = []
         for desk_key, desk in self.desks.items():
-            desk_ = Movie(desk.title, year=desk.year)
+            desk_ = Desk(desk.deskName)
             desks.append((desk_key, desk_))
         return desks

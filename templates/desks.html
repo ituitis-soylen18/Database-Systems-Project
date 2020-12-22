@@ -15,8 +15,7 @@
             </label>
             {% endif %}
             <a href="{{ url_for('desk_page', desk_key=desk_key) }}">
-              {{ desk.title }}
-              {% if desk.year %} ({{ desk.year }}) {% endif %}
+              {{ desk.deskName }}
             </a>
           </td>
         </tr>
