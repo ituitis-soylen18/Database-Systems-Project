@@ -1,17 +1,17 @@
 {% extends "layout.html" %}
-{% block title %}Movie{% endblock %}
+{% block title %}Desk{% endblock %}
 {% block content %}
-    <h1 class="title">Movie</h1>
+    <h1 class="title">Desk</h1>
 
     <table class="table">
       <tr>
         <th>Title:</th>
-        <td>{{ movie.title }}</td>
+        <td>{{ desk.title }}</td>
       </tr>
-      {% if movie.year %}
+      {% if desk.year %}
       <tr>
         <th>Year:</th>
-        <td>{{ movie.year }}</td>
+        <td>{{ desk.year }}</td>
       </tr>
       {% endif %}
     </table>

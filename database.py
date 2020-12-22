@@ -1,33 +1,33 @@
-from movie import Movie
+from desk import Desk
 
 
 class Database:
     def __init__(self):
-        self.movies = {}
-        self._last_movie_key = 0
+        self.desks = {}
+        self._last_desk_key = 0
 
-    def add_movie(self, movie):
-        self._last_movie_key += 1
-        self.movies[self._last_movie_key] = movie
-        return self._last_movie_key
+    def add_desk(self, desk):
+        self._last_desk_key += 1
+        self.desks[self._last_desk_key] = desk
+        return self._last_desk_key
 
-    def update_movie(self, movie_key, movie):
-        self.movies[movie_key] = movie
+    def update_desk(self, desk_key, desk):
+        self.desks[desk_key] = desk
 
-    def delete_movie(self, movie_key):
-        if movie_key in self.movies:
-            del self.movies[movie_key]
+    def delete_desk(self, desk_key):
+        if desk_key in self.desks:
+            del self.desks[desk_key]
 
-    def get_movie(self, movie_key):
-        movie = self.movies.get(movie_key)
-        if movie is None:
+    def get_desk(self, desk_key):
+        desk = self.desks.get(desk_key)
+        if desk is None:
             return None
-        movie_ = Movie(movie.title, year=movie.year)
-        return movie_
+        desk_ = Desk(desk.title, year=desk.year)
+        return desk_
 
-    def get_movies(self):
-        movies = []
-        for movie_key, movie in self.movies.items():
-            movie_ = Movie(movie.title, year=movie.year)
-            movies.append((movie_key, movie_))
-        return movies
+    def get_desks(self):
+        desks = []
+        for desk_key, desk in self.desks.items():
+            desk_ = Movie(desk.title, year=desk.year)
+            desks.append((desk_key, desk_))
+        return desks

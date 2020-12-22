@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask import current_app, render_template, request, redirect, url_for, abort, flash
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
-from movie import Movie
-from forms import MovieEditForm, LoginForm
+from desk import Desk
+from forms import DeskEditForm, LoginForm
 from user import get_user
 from passlib.hash import pbkdf2_sha256 as hasher
 
@@ -12,58 +12,58 @@ def home_page():
     return render_template("home.html", day=day_name)
 
 
-def movies_page():
+def desks_page():
     db = current_app.config["db"]
     if request.method == "GET":
-        movies = db.get_movies()
-        return render_template("movies.html", movies=sorted(movies))
+        desks = db.get_desks()
+        return render_template("desks.html", desks=sorted(desks))
     else:
         if not current_user.is_admin:
             abort(401)
-        form_movie_keys = request.form.getlist("movie_keys")
-        for form_movie_key in form_movie_keys:
-            db.delete_movie(int(form_movie_key))
-        flash("%(num)d movies deleted." % {"num": len(form_movie_keys)})
-        return redirect(url_for("movies_page"))
+        form_desk_keys = request.form.getlist("desk_keys")
+        for form_desk_key in form_desk_keys:
+            db.delete_desk(int(form_desk_key))
+        flash("%(num)d desks deleted." % {"num": len(form_desk_keys)})
+        return redirect(url_for("desks_page"))
 
-def movie_page(movie_key):
+def desk_page(desk_key):
     db = current_app.config["db"]
-    movie = db.get_movie(movie_key)
-    if movie is None:
+    desk = db.get_desk(desk_key)
+    if desk is None:
         abort(404)
-    return render_template("movie.html", movie=movie)
+    return render_template("desk.html", desk=desk)
 
 @login_required
-def movie_add_page():
+def desk_add_page():
     if not current_user.is_admin:
         abort(401)
-    form = MovieEditForm()
+    form = DeskEditForm()
     if form.validate_on_submit():
         title = form.data["title"]
         year = form.data["year"]
-        movie = Movie(title, year=year)
+        desk = Desk(title, year=year)
         db = current_app.config["db"]
-        movie_key = db.add_movie(movie)
-        flash("Movie added.")
-        return redirect(url_for("movie_page", movie_key=movie_key))
-    return render_template("movie_edit.html", form=form)
+        desk_key = db.add_desk(desk)
+        flash("Desk added.")
+        return redirect(url_for("desk_page", desk_key=desk_key))
+    return render_template("desk_edit.html", form=form)
 
 
 @login_required
-def movie_edit_page(movie_key):
+def desk_edit_page(desk_key):
     db = current_app.config["db"]
-    movie = db.get_movie(movie_key)
-    form = MovieEditForm()
+    desk = db.get_desk(desk_key)
+    form = DeskEditForm()
     if form.validate_on_submit():
         title = form.data["title"]
         year = form.data["year"]
-        movie = Movie(title, year=year)
-        db.update_movie(movie_key, movie)
-        flash("Movie data updated.")
-        return redirect(url_for("movie_page", movie_key=movie_key))
-    form.title.data = movie.title
-    form.year.data = movie.year if movie.year else ""
-    return render_template("movie_edit.html", form=form)
+        desk = Desk(title, year=year)
+        db.update_desk(desk_key, desk)
+        flash("Desk data updated.")
+        return redirect(url_for("desk_page", desk_key=desk_key))
+    form.title.data = desk.title
+    form.year.data = desk.year if desk.year else ""
+    return render_template("desk_edit.html", form=form)
 
 def login_page():
     form = LoginForm()

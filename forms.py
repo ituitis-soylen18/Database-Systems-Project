@@ -6,7 +6,7 @@ from wtforms_components import IntegerField
 from datetime import datetime
 
 
-class MovieEditForm(FlaskForm):
+class DeskEditForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
 
     year = IntegerField(

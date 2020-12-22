@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_required
 
 import views
 from database import Database
-from movie import Movie
+from desk import Desk
 from user import get_user
 
 
@@ -27,16 +27,16 @@ def create_app():
     app.add_url_rule("/logout", view_func=views.logout_page)
 
     app.add_url_rule(
-        "/movies", view_func=views.movies_page, methods=["GET", "POST"]
+        "/desks", view_func=views.desks_page, methods=["GET", "POST"]
     )
-    app.add_url_rule("/movies/<int:movie_key>", view_func=views.movie_page)
+    app.add_url_rule("/desks/<int:desk_key>", view_func=views.desk_page)
     app.add_url_rule(
-        "/movies/<int:movie_key>/edit",
-        view_func=views.movie_edit_page,
+        "/desks/<int:desk_key>/edit",
+        view_func=views.desk_edit_page,
         methods=["GET", "POST"],
     )
     app.add_url_rule(
-        "/new-movie", view_func=views.movie_add_page, methods=["GET", "POST"]
+        "/new-desk", view_func=views.desk_add_page, methods=["GET", "POST"]
     )
 
     lm.init_app(app)
