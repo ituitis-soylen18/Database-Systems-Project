@@ -6,15 +6,15 @@
     {% if desks %}
     <form action="" method="post" name="desk_list">
       <table class="table is-striped is-fullwidth">
-        {% for desk_key, desk in desks %}
+        {% for deskID, desk in desks %}
         <tr>
           <td>
             {% if current_user.is_admin %}
             <label class="checkbox">
-              <input type="checkbox" name="desk_keys" value="{{ desk_key }}"/>
+              <input type="checkbox" name="deskIDs" value="{{ deskID }}"/>
             </label>
             {% endif %}
-            <a href="{{ url_for('desk_page', desk_key=desk_key) }}">
+            <a href="{{ url_for('desk_page', deskID=deskID) }}">
               {{ desk.deskName }}
             </a>
           </td>

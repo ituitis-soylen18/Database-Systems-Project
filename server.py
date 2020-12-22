@@ -1,11 +1,19 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_login import LoginManager, login_required
-
+import psycopg2
 import views
 from database import Database
 from desk import Desk
 from user import get_user
 
+try:
+    conn = psycopg2.connect(user="postgres",
+                            password="egf110",
+                            host="127.0.0.1",
+                            database="flashapp")
+    cursor = conn.cursor()
+except (Exception, Error) as error:
+    print("Error while connecting to PostgreSQL", error)
 
 lm = LoginManager()
 
@@ -42,7 +50,7 @@ def create_app():
     lm.init_app(app)
     lm.login_view = "login_page"
 
-    db = Database()
+    db = Database(conn)
     app.config["db"] = db
 
     return app
@@ -52,3 +60,8 @@ if __name__ == "__main__":
     app = create_app()
     port = app.config.get("PORT", 5000)
     app.run(host="0.0.0.0", port=port)
+
+if (conn):
+    cursor.close()
+    conn.close()
+    print("PostgreSQL connection is closed")
