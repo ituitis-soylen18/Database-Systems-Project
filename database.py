@@ -5,37 +5,39 @@ class Database:
         self.dbfile = dbfile
 
     def add_desk(self, desk):
-        query = "INSERT INTO desk (deskID, deskName) VALUES (DEFAULT, %s)"
+        query = "INSERT INTO desk (deskName, languageID) VALUES ( %s, NULL) RETURNING deskID"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (desk.deskName,))
         self.dbfile.commit()
-        desk_key = cursor.lastrowid
-        return desk_key
+        deskID = cursor.fetchone()[0]
+        return deskID
 
-    def update_desk(self, desk_key, desk):
+    def update_desk(self, deskID, desk):
         query = "UPDATE desk SET deskName = %s WHERE (deskID = %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (desk.deskName, desk_key))
+        cursor.execute(query, (desk.deskName, deskID))
         self.dbfile.commit()
 
-    def delete_desk(self, desk_key):
+    def delete_desk(self, deskID):
         query = "DELETE FROM desk WHERE (deskID = %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (desk_key, ))
+        cursor.execute(query, (deskID, ))
         self.dbfile.commit()
 
-    def get_desk(self, desk_key):
+    def get_desk(self, deskID):
         query = "SELECT deskName FROM desk WHERE (deskID = %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (desk_key, ))
-        self.dbfile.commit()
+        cursor.execute(query, (deskID, ))
+        deskName = cursor.fetchone()
+        desk = Desk(deskName)
+        return desk
 
     def get_desks(self):
         desks = []
         query = "SELECT deskID, deskName FROM desk ORDER BY deskID"
         cursor = self.dbfile.cursor()
         cursor.execute(query)
-        self.dbfile.commit()
         for deskID, deskName in cursor:
-                desks.append((deskID, deskName))
+                desk = Desk(deskName)
+                desks.append((deskID, desk))
         return desks

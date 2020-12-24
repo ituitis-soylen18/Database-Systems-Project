@@ -20,15 +20,15 @@ def desks_page():
     else:
         if not current_user.is_admin:
             abort(401)
-        form_desk_keys = request.form.getlist("desk_keys")
-        for form_desk_key in form_desk_keys:
-            db.delete_desk(int(form_desk_key))
-        flash("%(num)d desks deleted." % {"num": len(form_desk_keys)})
+        form_deskIDs = request.form.getlist("deskIDs")
+        for form_deskID in form_deskIDs:
+            db.delete_desk(int(form_deskID))
+        flash("%(num)d desks deleted." % {"num": len(form_deskIDs)})
         return redirect(url_for("desks_page"))
 
-def desk_page(desk_key):
+def desk_page(deskID):
     db = current_app.config["db"]
-    desk = db.get_desk(desk_key)
+    desk = db.get_desk(deskID)
     if desk is None:
         abort(404)
     return render_template("desk.html", desk=desk)
@@ -42,23 +42,24 @@ def desk_add_page():
         deskName = form.data["deskName"]
         db = current_app.config["db"]
         desk = Desk(deskName)
-        desk_key = db.add_desk(desk)
+        deskID = db.add_desk(desk)
+        print("----------------------",deskID)
         flash("Desk added.")
-        return redirect(url_for("desk_page", desk_key=desk_key))
+        return redirect(url_for("desk_page", deskID=deskID))
     return render_template("desk_edit.html", form=form)
 
 
 @login_required
-def desk_edit_page(desk_key):
+def desk_edit_page(deskID):
     db = current_app.config["db"]
-    desk = db.get_desk(desk_key)
+    desk = db.get_desk(deskID)
     form = DeskEditForm()
     if form.validate_on_submit():
         deskName = form.data["deskName"]
         desk = Desk(deskName)
-        db.update_desk(desk_key, desk)
+        db.update_desk(deskID, desk)
         flash("Desk data updated.")
-        return redirect(url_for("desk_page", desk_key=desk_key))
+        return redirect(url_for("desk_page", deskID=deskID))
     form.deskName.data = desk.deskName
     return render_template("desk_edit.html", form=form)
 

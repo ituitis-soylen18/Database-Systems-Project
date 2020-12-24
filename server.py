@@ -37,9 +37,9 @@ def create_app():
     app.add_url_rule(
         "/desks", view_func=views.desks_page, methods=["GET", "POST"]
     )
-    app.add_url_rule("/desks/<int:desk_key>", view_func=views.desk_page)
+    app.add_url_rule("/desks/<int:deskID>", view_func=views.desk_page)
     app.add_url_rule(
-        "/desks/<int:desk_key>/edit",
+        "/desks/<int:deskID>/edit",
         view_func=views.desk_edit_page,
         methods=["GET", "POST"],
     )
