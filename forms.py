@@ -9,9 +9,12 @@ from datetime import datetime
 class DeskEditForm(FlaskForm):
     deskName = StringField("Title", validators=[DataRequired()])
 
+class CardEditForm(FlaskForm):
+    word = StringField("Word", validators=[DataRequired()])
+    translation = StringField("Translation", validators=[DataRequired()])
+
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-
     password = PasswordField("Password", validators=[DataRequired()])
 
 class SigninForm(FlaskForm):

@@ -1,4 +1,4 @@
-from desk import Desk
+from desk import Desk, Flashcard
 from user import User
 
 class Database:
@@ -9,10 +9,10 @@ class Database:
         query = "INSERT INTO desk (deskName, languageID) VALUES ( %s, NULL) RETURNING deskID"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (desk.deskName,))
-        self.dbfile.commit()
         deskID = cursor.fetchone()[0]
         query = "INSERT INTO userdesks (userID, deskID) VALUES ( %s, %s)"
         cursor.execute(query, (userID, deskID))
+        self.dbfile.commit()
         return deskID
 
     def update_desk(self, deskID, desk):
@@ -35,11 +35,11 @@ class Database:
         desk = Desk(deskName)
         return desk
 
-    def get_desks(self):
+    def get_desks(self, ID):
         desks = []
-        query = "SELECT deskID, deskName FROM desk ORDER BY deskID"
+        query = "SELECT deskID, deskName FROM desk NATURAL JOIN userdesks WHERE (userID = %s) ORDER BY deskID"
         cursor = self.dbfile.cursor()
-        cursor.execute(query)
+        cursor.execute(query, (ID, ))
         for deskID, deskName in cursor:
                 desk = Desk(deskName)
                 desks.append((deskID, desk))
@@ -51,10 +51,10 @@ class Database:
     def check_usermail(self, mail):
         return False
     
-    def add_user(self, user):
+    def add_user(self, username, passwordHash, mail, firstName, lastName):
         query = "INSERT INTO useraccount (nickName, mail, passwordHash, firstName, lastName) VALUES ( %s, %s, %s, %s, %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (user.nickName, user.mail, user.passwordHash, user.firstName, user.lastName))
+        cursor.execute(query, (username, mail, passwordHash,firstName, lastName))
         self.dbfile.commit()
     
     """ def get_user(self, userID):
@@ -87,5 +87,43 @@ class Database:
             user = None
         return user
 
-"""     def check_usermail():
-    def check_username(): """
+    def add_card(self, card, deskID):
+        query = "INSERT INTO flashcard (word, translation, languageID) VALUES (%s, %s, NULL) RETURNING flashID"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (card.word, card.translation))
+        flashID = cursor.fetchone()[0]
+        query = "INSERT INTO cardsindesks (deskID, flashID) VALUES ( %s, %s)"
+        cursor.execute(query, (deskID, flashID))
+        self.dbfile.commit()
+        return flashID
+
+    def get_cards(self, deskID):
+        cards = []
+        query = "SELECT flashID, word, translation FROM flashcard NATURAL JOIN cardsindesks WHERE (deskID = %s) ORDER BY flashID"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (deskID, ))
+        for flashID, word, translation in cursor:
+                card = Flashcard(word, translation)
+                cards.append((flashID, card))
+        return cards
+
+    def get_card(self, flashID):
+        query = "SELECT word, translation FROM flashcard WHERE (flashID = %s)"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (flashID, ))
+        data = cursor.fetchone()
+        card = Flashcard(data[0], data[1])
+        return card
+    
+    def update_card(self, flashID, card):
+        query = "UPDATE flashcard SET word = %s, translation = %s WHERE (flashID = %s)"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (card.word, card.translation, flashID))
+        self.dbfile.commit()
+
+    def delete_card(self, flashID, deskID):
+        query = """DELETE FROM flashcard WHERE (flashID = %s);
+                DELETE FROM cardsindesks WHERE (flashID = %s AND deskID = %s) """
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (flashID, flashID, deskID))
+        self.dbfile.commit()

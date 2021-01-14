@@ -1,21 +1,23 @@
 {% extends "layout.html" %}
 {% block title %}Edit desk{% endblock %}
 {% block content %}
-    <h1 class="title">Edit Desk</h1>
+    <h1 class="title">Add Card</h1>
 
     <form action="" method="post" name="desk_edit">
       {{ form.csrf_token }}
 
       <div class="field">
-        <label for="deskName" class="label">Title</label>
+        <label for="word" class="label">Word</label>
         <div class="control">
-          {{ form.deskName(required=True, autofocus=True, class='input') }}
+          {{ form.word(required=True, autofocus=True, class='input') }}
         </div>
-        {% for error in form.deskName.errors %}
-        <p class="help has-background-warning">
-            {{ error }}
-        </p>
-        {% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="translation" class="label">Translation</label>
+        <div class="control">
+            {{ form.translation(required=True, autofocus=True, class='input') }}
+        </div>
       </div>
 
       <div class="field is-grouped">

@@ -10,12 +10,41 @@
       </tr>
     </table>
 
+    {% if cards %}
+    <form action="" method="post" name="card_list">
+      <table class="table is-striped is-fullwidth">
+        {% for flashID, card in cards %}
+        <tr>
+          <td>
+            <label class="checkbox">
+              <input type="checkbox" name="flashIDs" value="{{ flashID }}"/>
+            </label>
+            <a href="{{ request.path }}/{{ flashID}}">
+              {{ card.word }}
+              {{ card.translation}}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-danger is-small">Delete</button>
+        </div>
+      </div>
+    </form>
+    {% endif %}
+
     {% if current_user.is_authenticated %}
     <div class="field is-grouped">
       <div class="control">
         <a class="button is-primary is-outlined is-small"
            href="{{ request.path }}/edit">Edit</a>
+        <a class="button is-primary is-outlined is-small"
+           href="{{ request.path }}/add_card">Add Card</a>
       </div>
     </div>
     {% endif %}
 {% endblock %}
+

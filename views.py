@@ -1,9 +1,9 @@
 from datetime import datetime
 from flask import current_app, render_template, request, redirect, url_for, abort, flash
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
-from desk import Desk
+from desk import Desk, Flashcard
 from user import User
-from forms import DeskEditForm, LoginForm, SigninForm
+from forms import DeskEditForm, LoginForm, SigninForm, CardEditForm
 from database import Database
 from passlib.hash import pbkdf2_sha256 as hasher
 
@@ -14,7 +14,7 @@ def home_page():
 def desks_page():
     db = current_app.config["db"]
     if request.method == "GET":
-        desks = db.get_desks()
+        desks = db.get_desks(current_user.userID)
         return render_template("desks.html", desks=sorted(desks))
     else:
         if not current_user.is_admin:
@@ -30,19 +30,24 @@ def desk_page(deskID):
     desk = db.get_desk(deskID)
     if desk is None:
         abort(404)
-    return render_template("desk.html", desk=desk)
+    if request.method == "GET":
+        cards = db.get_cards(deskID)
+        return render_template("desk.html", desk=desk, cards=cards)
+    else:
+        flashIDs = request.form.getlist("flashIDs")
+        for flashID in flashIDs:
+            db.delete_card(int(flashID), deskID)
+        flash("%(num)d cards deleted." % {"num": len(flashIDs)})
+        return redirect(url_for("desk_page", deskID=deskID))
 
 @login_required
 def desk_add_page():
-    # if not current_user.is_admin:
-    #     abort(401)
     form = DeskEditForm()
     if form.validate_on_submit():
         deskName = form.data["deskName"]
         db = current_app.config["db"]
         desk = Desk(deskName)
         deskID = db.add_desk(desk, current_user.userID)
-        print("----------------------",deskID)
         flash("Desk added.")
         return redirect(url_for("desk_page", deskID=deskID))
     return render_template("desk_edit.html", form=form)
@@ -61,6 +66,43 @@ def desk_edit_page(deskID):
         return redirect(url_for("desk_page", deskID=deskID))
     form.deskName.data = desk.deskName
     return render_template("desk_edit.html", form=form)
+
+@login_required
+def card_page(flashID, deskID):
+    db = current_app.config["db"]
+    card = db.get_card(flashID)
+    if card is None:
+        abort(404)
+    return render_template("card.html", card=card)
+
+@login_required
+def card_add_page(deskID):
+    form = CardEditForm()
+    if form.validate_on_submit():
+        word = form.data["word"]
+        translation = form.data["translation"]
+        flashcard = Flashcard(word, translation)
+        db = current_app.config["db"]
+        flashID = db.add_card(flashcard, deskID)
+        flash("Flashcard added.")
+        return redirect(url_for("card_page", flashID=flashID, deskID=deskID))
+    return render_template("card_edit.html", form=form)
+
+@login_required
+def card_edit_page(flashID, deskID):
+    db = current_app.config["db"]
+    card = db.get_card(flashID)
+    form = CardEditForm()
+    if form.validate_on_submit():
+        word = form.data["word"]
+        translation = form.data["translation"]
+        flashcard = Flashcard(word, translation)
+        db = current_app.config["db"]
+        db.update_card(flashID, flashcard)
+        flash("Flashcard data updated.")
+        return redirect(url_for("card_page", flashID=flashID, deskID=deskID))
+    form.word.data = card.word
+    return render_template("card_edit.html", form=form)
 
 def login_page():
     form = LoginForm()
@@ -100,8 +142,8 @@ def signin_page():
             passwordHash =  hasher.hash(form.data["password"])
             firstName = form.data["firstName"]
             lastName = form.data["lastName"]
-            user = User(username, passwordHash, mail, firstName, lastName)
-            db.add_user(user)
+            #user = User(username, passwordHash, mail, firstName, lastName)
+            db.add_user(username, passwordHash, mail, firstName, lastName)
             next_page = request.args.get("next", url_for("home_page"))
             return redirect(next_page)
     return render_template("signin.html", form=form)
