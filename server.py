@@ -1,10 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask, current_app
 from flask_login import LoginManager, login_required
 import psycopg2
 import views
 from database import Database
 from desk import Desk
-from user import get_user
 
 try:
     conn = psycopg2.connect(user="postgres",
@@ -19,8 +18,9 @@ lm = LoginManager()
 
 
 @lm.user_loader
-def load_user(user_id):
-    return get_user(user_id)
+def load_user(username):
+    db = current_app.config["db"]
+    return db.load_user(username)
 
 
 def create_app():
@@ -31,6 +31,9 @@ def create_app():
 
     app.add_url_rule(
         "/login", view_func=views.login_page, methods=["GET", "POST"]
+    )
+    app.add_url_rule(
+        "/signin", view_func=views.signin_page, methods=["GET", "POST"]
     )
     app.add_url_rule("/logout", view_func=views.logout_page)
 

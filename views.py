@@ -2,14 +2,13 @@ from datetime import datetime
 from flask import current_app, render_template, request, redirect, url_for, abort, flash
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from desk import Desk
-from forms import DeskEditForm, LoginForm
-from user import get_user
+from user import User
+from forms import DeskEditForm, LoginForm, SigninForm
+from database import Database
 from passlib.hash import pbkdf2_sha256 as hasher
 
 def home_page():
-    today = datetime.today()
-    day_name = today.strftime("%A")
-    return render_template("home.html", day=day_name)
+    return render_template("home.html")
 
 
 def desks_page():
@@ -35,14 +34,14 @@ def desk_page(deskID):
 
 @login_required
 def desk_add_page():
-    if not current_user.is_admin:
-        abort(401)
+    # if not current_user.is_admin:
+    #     abort(401)
     form = DeskEditForm()
     if form.validate_on_submit():
         deskName = form.data["deskName"]
         db = current_app.config["db"]
         desk = Desk(deskName)
-        deskID = db.add_desk(desk)
+        deskID = db.add_desk(desk, current_user.userID)
         print("----------------------",deskID)
         flash("Desk added.")
         return redirect(url_for("desk_page", deskID=deskID))
@@ -66,11 +65,14 @@ def desk_edit_page(deskID):
 def login_page():
     form = LoginForm()
     if form.validate_on_submit():
+        db = current_app.config["db"]
         username = form.data["username"]
-        user = get_user(username)
+        user = db.load_user(username)
         if user is not None:
+            print("------usernotnone---passed------")
             password = form.data["password"]
-            if hasher.verify(password, user.password):
+            print("-----password-----", password)
+            if hasher.verify(password, user.passwordHash):
                 login_user(user)
                 flash("You have logged in.")
                 next_page = request.args.get("next", url_for("home_page"))
@@ -83,3 +85,23 @@ def logout_page():
     logout_user()
     flash("You have logged out.")
     return redirect(url_for("home_page"))
+
+def signin_page():
+    form = SigninForm()
+    if form.validate_on_submit():
+        db = current_app.config["db"]
+        username = form.data["username"]
+        mail = form.data["mail"]
+        if db.check_username(username):
+            flash("Username already taken.")
+        elif db.check_usermail(mail):
+            flash("There is an already registered account with given mail address.")
+        else:
+            passwordHash =  hasher.hash(form.data["password"])
+            firstName = form.data["firstName"]
+            lastName = form.data["lastName"]
+            user = User(username, passwordHash, mail, firstName, lastName)
+            db.add_user(user)
+            next_page = request.args.get("next", url_for("home_page"))
+            return redirect(next_page)
+    return render_template("signin.html", form=form)

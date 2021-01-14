@@ -1,12 +1,15 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <section class="hero">
-      <div class="hero-body">
-        <div class="container has-text-centered">
-          <h1 class="title">My desks</h1>
-          <p class="subtitle">Have a nice {{ day }}!</p>
-        </div>
-      </div>
-    </section>
+    <h1 class="cover-heading">Welcome to FlashMemory</h1>
+    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque magna.</p>
+    
+    <p class="lead">
+      {% if not current_user.is_authenticated %}
+      <a href="{{ url_for('login_page') }}" class="btn btn-lg btn-secondary">Log in</a>
+      {% else %}
+      <a href="{{ url_for('desks_page') }}" class="btn btn-lg btn-secondary">List desks</a>
+      {% endif %}
+    </p>
+
 {% endblock %}
