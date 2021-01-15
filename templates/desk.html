@@ -1,15 +1,24 @@
 {% extends "layout.html" %}
 {% block title %}Desk{% endblock %}
 {% block content %}
-    <h1 class="title">Desk</h1>
+    <h1 class="title">{{ desk.deskName }}</h1>
 
-    <table class="table">
+<!--     <table class="table">
       <tr>
         <th>Title:</th>
         <td>{{ desk.deskName }}</td>
       </tr>
     </table>
-
+ -->
+    {% if current_user.is_authenticated %}
+    <div class="field is-grouped">
+      <div class="control">
+        <a class="button is-primary is-outlined is-small"
+           href="{{ request.path }}/study">Study Desk</a>
+      </div>
+    </div>
+    {% endif %}
+    
     {% if cards %}
     <form action="" method="post" name="card_list">
       <table class="table is-striped is-fullwidth">
@@ -45,6 +54,13 @@
            href="{{ request.path }}/add_card">Add Card</a>
       </div>
     </div>
+    <form action="/desks" method="post" name="delete_desk">
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-danger is-small" name="deskID" value="{{deskID}}">Delete Desk</button>
+        </div>
+      </div>
+    </form>
     {% endif %}
 {% endblock %}
 

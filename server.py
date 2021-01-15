@@ -49,6 +49,7 @@ def create_app():
     app.add_url_rule(
         "/new-desk", view_func=views.desk_add_page, methods=["GET", "POST"]
     )
+    app.add_url_rule("/desks/<int:deskID>/study", view_func=views.study_page)
     app.add_url_rule("/desks/<int:deskID>/add_card", view_func=views.card_add_page, methods=["GET", "POST"])
     app.add_url_rule("/desks/<int:deskID>/<int:flashID>", view_func=views.card_page, methods=["GET", "POST"])
     app.add_url_rule("/desks/<int:deskID>/<int:flashID>/edit", view_func=views.card_edit_page, methods=["GET", "POST"])

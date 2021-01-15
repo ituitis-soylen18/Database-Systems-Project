@@ -22,9 +22,12 @@ class Database:
         self.dbfile.commit()
 
     def delete_desk(self, deskID):
-        query = "DELETE FROM desk WHERE (deskID = %s)"
+        query = """DELETE FROM desk WHERE (deskID = %s);
+                DELETE FROM userdesks WHERE (deskID = %s);
+                DELETE FROM flashcard USING cardsindesks WHERE (deskID = %s);
+                DELETE FROM cardsindesks WHERE (deskID = %s)"""
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (deskID, ))
+        cursor.execute(query, (deskID, deskID, deskID, deskID))
         self.dbfile.commit()
 
     def get_desk(self, deskID):

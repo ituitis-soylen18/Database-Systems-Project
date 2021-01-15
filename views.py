@@ -13,32 +13,29 @@ def home_page():
 
 def desks_page():
     db = current_app.config["db"]
-    if request.method == "GET":
-        desks = db.get_desks(current_user.userID)
-        return render_template("desks.html", desks=sorted(desks))
-    else:
-        if not current_user.is_admin:
-            abort(401)
-        form_deskIDs = request.form.getlist("deskIDs")
-        for form_deskID in form_deskIDs:
-            db.delete_desk(int(form_deskID))
-        flash("%(num)d desks deleted." % {"num": len(form_deskIDs)})
+    if request.method == "POST":
+        print("post method")
+        deskID = request.form["deskID"]
+        print("--------", deskID)
+        db.delete_desk(int(deskID))
+        flash("Desk deleted.")
         return redirect(url_for("desks_page"))
+    desks = db.get_desks(current_user.userID)
+    return render_template("desks.html", desks=sorted(desks))
 
 def desk_page(deskID):
     db = current_app.config["db"]
     desk = db.get_desk(deskID)
     if desk is None:
         abort(404)
-    if request.method == "GET":
-        cards = db.get_cards(deskID)
-        return render_template("desk.html", desk=desk, cards=cards)
-    else:
+    if request.method == "POST":
         flashIDs = request.form.getlist("flashIDs")
         for flashID in flashIDs:
             db.delete_card(int(flashID), deskID)
         flash("%(num)d cards deleted." % {"num": len(flashIDs)})
         return redirect(url_for("desk_page", deskID=deskID))
+    cards = db.get_cards(deskID)
+    return render_template("desk.html", desk=desk, cards=cards, deskID=deskID)    
 
 @login_required
 def desk_add_page():
@@ -103,6 +100,13 @@ def card_edit_page(flashID, deskID):
         return redirect(url_for("card_page", flashID=flashID, deskID=deskID))
     form.word.data = card.word
     return render_template("card_edit.html", form=form)
+
+@login_required
+def study_page(deskID):
+    db = current_app.config["db"]
+    cards = db.get_cards(deskID)
+    print("****************",cards[1],"**************")
+    return render_template("study.html", card = cards[0][1])
 
 def login_page():
     form = LoginForm()
