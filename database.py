@@ -1,5 +1,6 @@
 from desk import Desk, Flashcard
 from user import User
+from datetime import datetime
 
 class Database:
     def __init__(self, dbfile):
@@ -84,7 +85,6 @@ class Database:
         try:
             cursor.execute(query, (nickName,))
             user_info = cursor.fetchone()
-            print("-----info-------------",user_info)
             user = User(user_info[0], user_info[1], user_info[2], user_info[3], user_info[4], user_info[5])
         except:
             user = None
@@ -129,4 +129,17 @@ class Database:
                 DELETE FROM cardsindesks WHERE (flashID = %s AND deskID = %s) """
         cursor = self.dbfile.cursor()
         cursor.execute(query, (flashID, flashID, deskID))
+        self.dbfile.commit()
+
+    def study_card(self, flashID, userID):
+        query = "SELECT repetition FROM studystats WHERE (userID = %s AND flashID = %s)"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (userID, flashID))
+        repetition = int(cursor.fetchone()[0])
+        if repetition == None:
+            query = "INSERT INTO studystats (userID, flashID, studytimestamp, repetition) VALUES (%s, %s, %s, 1)"
+            cursor.execute(query, (userID, flashID, datetime.now()))
+        else:
+            query = "UPDATE studystats SET studytimestamp = %s, repetition = %s WHERE (userID = %s AND flashID = %s)"
+            cursor.execute(query, (datetime.now(), repetition+1, userID, flashID))
         self.dbfile.commit()

@@ -14,9 +14,7 @@ def home_page():
 def desks_page():
     db = current_app.config["db"]
     if request.method == "POST":
-        print("post method")
         deskID = request.form["deskID"]
-        print("--------", deskID)
         db.delete_desk(int(deskID))
         flash("Desk deleted.")
         return redirect(url_for("desks_page"))
@@ -105,8 +103,13 @@ def card_edit_page(flashID, deskID):
 def study_page(deskID):
     db = current_app.config["db"]
     cards = db.get_cards(deskID)
-    print("****************",cards[1],"**************")
-    return render_template("study.html", card = cards[0][1])
+    cardno = int(request.args.get('cardno',0))
+    print("************",cardno)
+    if request.method == "POST":
+        return redirect(url_for("study_page", deskID=deskID, cardno=cardno+1))
+    db.study_card(cards[cardno][0], current_user.userID)
+    finished = (cardno >= len(cards)-1) 
+    return render_template("study.html", card = cards[cardno][1], finished = finished, deskID=deskID)
 
 def login_page():
     form = LoginForm()
@@ -115,9 +118,7 @@ def login_page():
         username = form.data["username"]
         user = db.load_user(username)
         if user is not None:
-            print("------usernotnone---passed------")
             password = form.data["password"]
-            print("-----password-----", password)
             if hasher.verify(password, user.passwordHash):
                 login_user(user)
                 flash("You have logged in.")

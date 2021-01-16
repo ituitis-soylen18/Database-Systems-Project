@@ -23,3 +23,6 @@ class SigninForm(FlaskForm):
     mail = StringField("Mail", validators=[DataRequired()])
     firstName = StringField("Firstname")
     lastName = StringField("Lastname")
+
+#class StudyForm(FlaskForm):
+    

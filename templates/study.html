@@ -4,21 +4,23 @@
     <h1 class="title">Study</h1>
     {% if card %}
     <form action="" method="post" name="card_study">
-      <table class="table is-striped is-fullwidth">
-        <tr id="word" onclick="">
-          <td>
-              {{ card.word }}
-              {{ card.translation}}
-          </td>
-        </tr>
-      </table>
-
+      <h3 id="word" onclick="backside()">
+        {{ card.word }}
+      </h3>
       <div class="field is-grouped">
         <div class="control">
-          <button class="button is-danger is-small">Next</button>
+          {% if not finished %}
+          <button class="btn btn-primary" type="submit">Next</button>
+          {% endif %}
+          <a class="btn btn-primary" href="{{ url_for('desk_page', deskID=deskID) }}">Finish</a>
         </div>
       </div>
     </form>
+    <script>
+      function backside(){
+        document.getElementById("word").innerHTML ="{{ card.translation}}";
+      }   
+    </script>      
     {% endif %}
 
 {% endblock %}
