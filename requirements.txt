@@ -24,7 +24,6 @@ jedi==0.15.2
 Jinja2==2.11.2
 keyring==18.0.1
 keyrings.alt==3.4.0
-language-selector==0.1
 launchpadlib==1.10.13
 lazr.restfulclient==0.14.2
 lazr.uri==1.0.3
