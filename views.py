@@ -6,6 +6,7 @@ from user import User
 from forms import DeskEditForm, LoginForm, SigninForm, CardEditForm
 from database import Database
 from passlib.hash import pbkdf2_sha256 as hasher
+import random
 
 def home_page():
     return render_template("home.html")
@@ -104,12 +105,19 @@ def study_page(deskID):
     db = current_app.config["db"]
     cards = db.get_cards(deskID)
     cardno = int(request.args.get('cardno',0))
-    print("************",cardno)
+    if cardno == 0:
+        random.shuffle(cards)
     if request.method == "POST":
         return redirect(url_for("study_page", deskID=deskID, cardno=cardno+1))
     db.study_card(cards[cardno][0], current_user.userID)
     finished = (cardno >= len(cards)-1) 
     return render_template("study.html", card = cards[cardno][1], finished = finished, deskID=deskID)
+
+@login_required
+def words_page():
+    db = current_app.config["db"]
+    words = db.get_words(current_user.userID)
+    return render_template("words.html", words = words)
 
 def login_page():
     form = LoginForm()

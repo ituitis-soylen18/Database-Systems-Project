@@ -53,7 +53,7 @@ def create_app():
     app.add_url_rule("/desks/<int:deskID>/add_card", view_func=views.card_add_page, methods=["GET", "POST"])
     app.add_url_rule("/desks/<int:deskID>/<int:flashID>", view_func=views.card_page, methods=["GET", "POST"])
     app.add_url_rule("/desks/<int:deskID>/<int:flashID>/edit", view_func=views.card_edit_page, methods=["GET", "POST"])
-
+    app.add_url_rule("/words", view_func=views.words_page)
     lm.init_app(app)
     lm.login_view = "login_page"
 

@@ -1,6 +1,12 @@
 from desk import Desk, Flashcard
 from user import User
-from datetime import datetime
+from datetime import datetime, timedelta
+
+def strfdelta(tdelta):
+    d = {"D": tdelta.days}
+    d["H"], rem = divmod(tdelta.seconds, 3600)
+    d["M"], d["S"] = divmod(rem, 60)
+    return d
 
 class Database:
     def __init__(self, dbfile):
@@ -23,12 +29,11 @@ class Database:
         self.dbfile.commit()
 
     def delete_desk(self, deskID):
-        query = """DELETE FROM desk WHERE (deskID = %s);
-                DELETE FROM userdesks WHERE (deskID = %s);
-                DELETE FROM flashcard USING cardsindesks WHERE (deskID = %s);
-                DELETE FROM cardsindesks WHERE (deskID = %s)"""
+        query = """
+                DELETE FROM flashcard WHERE flashID IN( SELECT flashID FROM cardsindesks WHERE deskID = %s);
+                DELETE FROM desk WHERE (deskID = %s);"""
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (deskID, deskID, deskID, deskID))
+        cursor.execute(query, ( deskID, deskID))
         self.dbfile.commit()
 
     def get_desk(self, deskID):
@@ -126,7 +131,8 @@ class Database:
 
     def delete_card(self, flashID, deskID):
         query = """DELETE FROM flashcard WHERE (flashID = %s);
-                DELETE FROM cardsindesks WHERE (flashID = %s AND deskID = %s) """
+                DELETE FROM cardsindesks WHERE (flashID = %s AND deskID = %s);
+                DELETE FROM studystats WHERE (flashID = %s) """
         cursor = self.dbfile.cursor()
         cursor.execute(query, (flashID, flashID, deskID))
         self.dbfile.commit()
@@ -135,11 +141,41 @@ class Database:
         query = "SELECT repetition FROM studystats WHERE (userID = %s AND flashID = %s)"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (userID, flashID))
-        repetition = int(cursor.fetchone()[0])
+        repetition = cursor.fetchone()
         if repetition == None:
             query = "INSERT INTO studystats (userID, flashID, studytimestamp, repetition) VALUES (%s, %s, %s, 1)"
             cursor.execute(query, (userID, flashID, datetime.now()))
         else:
             query = "UPDATE studystats SET studytimestamp = %s, repetition = %s WHERE (userID = %s AND flashID = %s)"
-            cursor.execute(query, (datetime.now(), repetition+1, userID, flashID))
+            cursor.execute(query, (datetime.now(), int(repetition[0])+1, userID, flashID))
         self.dbfile.commit()
+
+    def get_words(self, userID):
+        words = []
+        query = "SELECT word, wordform, studytimestamp, repetition FROM studystats NATURAL JOIN flashcard WHERE (userID = %s) ORDER BY studytimestamp"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (userID, ))
+        for word, wordform, studytimestamp, repetition in cursor:
+            timepassed = strfdelta( datetime.now() - studytimestamp)
+            if timepassed["D"] > 0:
+                if timepassed["D"] == 1:
+                    timestr = "Yesterday"
+                else:
+                    timestr = str(timepassed["D"]) + " days ago"
+            elif timepassed["H"] > 0:
+                if timepassed["H"] == 1:
+                    timestr = "1 hour ago"
+                else:
+                    timestr = str(timepassed["H"]) + " hours ago"
+            elif timepassed["M"] > 0:
+                if timepassed["M"] == 1:
+                    timestr = "1 minute ago"
+                else:
+                    timestr = str(timepassed["M"]) + " minutes ago"
+            else:
+                if timepassed["S"] == 1:
+                    timestr = "1 second ago"
+                else:
+                    timestr = str(timepassed["S"]) + " seconds ago"
+            words.append((word, wordform, timestr, repetition ))
+        return words
