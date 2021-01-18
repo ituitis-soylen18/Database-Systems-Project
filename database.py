@@ -1,4 +1,4 @@
-from desk import Desk, Flashcard
+from desk import Desk, Flashcard, Language
 from user import User
 from datetime import datetime, timedelta
 
@@ -12,20 +12,20 @@ class Database:
     def __init__(self, dbfile):
         self.dbfile = dbfile
 
-    def add_desk(self, desk, userID):
-        query = "INSERT INTO desk (deskName, languageID) VALUES ( %s, NULL) RETURNING deskID"
+    def add_desk(self, desk, userID, languageID):
+        query = "INSERT INTO desk (deskName, languageID) VALUES ( %s, %s) RETURNING deskID"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (desk.deskName,))
+        cursor.execute(query, (desk.deskName, languageID))
         deskID = cursor.fetchone()[0]
         query = "INSERT INTO userdesks (userID, deskID) VALUES ( %s, %s)"
         cursor.execute(query, (userID, deskID))
         self.dbfile.commit()
         return deskID
 
-    def update_desk(self, deskID, desk):
-        query = "UPDATE desk SET deskName = %s WHERE (deskID = %s)"
+    def update_desk(self, deskID, desk, languageID):
+        query = "UPDATE desk SET deskName = %s, languageID = %s WHERE (deskID = %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (desk.deskName, deskID))
+        cursor.execute(query, (desk.deskName, languageID, deskID))
         self.dbfile.commit()
 
     def delete_desk(self, deskID):
@@ -37,21 +37,25 @@ class Database:
         self.dbfile.commit()
 
     def get_desk(self, deskID):
-        query = "SELECT deskName FROM desk WHERE (deskID = %s)"
+        query = "SELECT deskName, languageID FROM desk WHERE (deskID = %s)"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (deskID, ))
-        deskName = cursor.fetchone()
-        desk = Desk(deskName)
+        deskinfo = cursor.fetchone()
+        desk = (Desk(deskinfo[0]), deskinfo[1])
         return desk
 
     def get_desks(self, ID):
         desks = []
-        query = "SELECT deskID, deskName FROM desk NATURAL JOIN userdesks WHERE (userID = %s) ORDER BY deskID"
+        query = "SELECT deskID, deskName, languageID FROM desk NATURAL JOIN userdesks WHERE (userID = %s) ORDER BY deskID"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (ID, ))
-        for deskID, deskName in cursor:
-                desk = Desk(deskName)
-                desks.append((deskID, desk))
+        for deskID, deskName, languageID in cursor:
+            if languageID is not None:
+                langstr = self.get_language(languageID)
+            else:
+                langstr = ""
+            desk = Desk(deskName)
+            desks.append((deskID, desk, langstr))
         return desks
 
     def check_username(self, nickName):
@@ -179,3 +183,21 @@ class Database:
                     timestr = str(timepassed["S"]) + " seconds ago"
             words.append((word, wordform, timestr, repetition ))
         return words
+
+    def get_languages(self):
+        languages = []
+        query = "SELECT languageID, fromLanguage, toLanguage FROM language"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query)
+        for languageID, fromLanguage, toLanguage in cursor:
+                language = Language(languageID, fromLanguage, toLanguage)
+                languages.append(language)
+        return languages
+    
+    def get_language(self, languageID):
+        query = "SELECT fromLanguage, toLanguage FROM language WHERE languageID = %s"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (languageID, ))
+        temp = cursor.fetchone()
+        langstr = temp[0] + " to " + temp[1]
+        return langstr

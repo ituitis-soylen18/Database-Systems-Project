@@ -7,17 +7,18 @@
       {{ form.csrf_token }}
 
       <div class="field">
-        <label for="deskName" class="label">Title</label>
-        <div class="control">
+        <div class="form-group">
+        <label for="deskName" class="form-control">Title</label>
           {{ form.deskName(required=True, autofocus=True, class='input') }}
         </div>
-        {% for error in form.deskName.errors %}
-        <p class="help has-background-warning">
-            {{ error }}
-        </p>
-        {% endfor %}
+        <div class="form-group">
+          <select class="form-control" name="languageID">
+            {% for language in languages %}
+            <option value="{{language.id}}">{{language.fromLanguage}} to {{language.toLanguage}}</option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
-
       <div class="field is-grouped">
         <div class="control">
           <button class="button is-primary is-small">Save</button>

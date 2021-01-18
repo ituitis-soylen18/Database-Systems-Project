@@ -3,13 +3,9 @@
 {% block content %}
     <h1 class="title">{{ desk.deskName }}</h1>
 
-<!--     <table class="table">
-      <tr>
-        <th>Title:</th>
-        <td>{{ desk.deskName }}</td>
-      </tr>
-    </table>
- -->
+    <div class="field is-grouped">
+      <p>{{languagestr}}</p>
+    </div> 
     {% if current_user.is_authenticated %}
     <div class="field is-grouped">
       <div class="control">

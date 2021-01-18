@@ -27,6 +27,10 @@ def desk_page(deskID):
     desk = db.get_desk(deskID)
     if desk is None:
         abort(404)
+    if desk[1] is not None:
+        languagestr = db.get_language(desk[1])
+    else:
+        languagestr = ""
     if request.method == "POST":
         flashIDs = request.form.getlist("flashIDs")
         for flashID in flashIDs:
@@ -34,34 +38,39 @@ def desk_page(deskID):
         flash("%(num)d cards deleted." % {"num": len(flashIDs)})
         return redirect(url_for("desk_page", deskID=deskID))
     cards = db.get_cards(deskID)
-    return render_template("desk.html", desk=desk, cards=cards, deskID=deskID)    
+    return render_template("desk.html", desk=desk[0], cards=cards, deskID=deskID, languagestr=languagestr)    
 
 @login_required
 def desk_add_page():
+    db = current_app.config["db"]
     form = DeskEditForm()
+    languages = db.get_languages()
     if form.validate_on_submit():
         deskName = form.data["deskName"]
+        languageID = request.form['languageID']
         db = current_app.config["db"]
         desk = Desk(deskName)
-        deskID = db.add_desk(desk, current_user.userID)
+        deskID = db.add_desk(desk, current_user.userID, languageID)
         flash("Desk added.")
         return redirect(url_for("desk_page", deskID=deskID))
-    return render_template("desk_edit.html", form=form)
+    return render_template("desk_edit.html", form=form, languages = languages)
 
 
 @login_required
 def desk_edit_page(deskID):
     db = current_app.config["db"]
-    desk = db.get_desk(deskID)
+    desk = db.get_desk(deskID)[0]
     form = DeskEditForm()
+    languages = db.get_languages()
     if form.validate_on_submit():
         deskName = form.data["deskName"]
+        languageID = request.form['languageID']
         desk = Desk(deskName)
-        db.update_desk(deskID, desk)
+        db.update_desk(deskID, desk, languageID)
         flash("Desk data updated.")
         return redirect(url_for("desk_page", deskID=deskID))
     form.deskName.data = desk.deskName
-    return render_template("desk_edit.html", form=form)
+    return render_template("desk_edit.html", form=form, languages = languages)
 
 @login_required
 def card_page(flashID, deskID):
