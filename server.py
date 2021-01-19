@@ -6,10 +6,10 @@ from database import Database
 from desk import Desk
 
 try:
-    conn = psycopg2.connect(user="postgres",
-                            password="egf110",
-                            host="127.0.0.1",
-                            database="flashapp")
+    conn = psycopg2.connect(user="gssdudqlhdjxwz",
+                            password="e2e3da30ea18d59c2934fe42f8b6f4a0a276e375ea25223098ddeda63a32bc15",
+                            host="ec2-54-78-127-245.eu-west-1.compute.amazonaws.com",
+                            database="detmhspas3lfv2")
     cursor = conn.cursor()
 except (Exception, Error) as error:
     print("Error while connecting to PostgreSQL", error)
