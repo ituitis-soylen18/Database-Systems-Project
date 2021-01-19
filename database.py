@@ -214,7 +214,7 @@ class Database:
 
     def get_languages(self):
         languages = []
-        query = "SELECT languageID, fromLanguage, toLanguage FROM language"
+        query = "SELECT languageID, fromLanguage, toLanguage FROM languages"
         cursor = self.dbfile.cursor()
         cursor.execute(query)
         for languageID, fromLanguage, toLanguage in cursor:
@@ -223,7 +223,7 @@ class Database:
         return languages
     
     def get_language(self, languageID):
-        query = "SELECT fromLanguage, toLanguage FROM language WHERE languageID = %s"
+        query = "SELECT fromLanguage, toLanguage FROM languages WHERE languageID = %s"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (languageID, ))
         temp = cursor.fetchone()
