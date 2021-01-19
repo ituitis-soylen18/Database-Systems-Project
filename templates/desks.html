@@ -1,32 +1,30 @@
 {% extends "layout.html" %}
 {% block title %}Desk List{% endblock %}
 {% block content %}
-    <h1 class="title">Desks</h1>
+    <h1 class="cover-heading">My Desks</h1>
 
     {% if desks %}
-    <form action="" method="post" name="desk_list">
-      <table class="table is-striped is-fullwidth">
-        {% for deskID, desk, language in desks %}
-        <tr>
-          <td>
-            <a href="{{ url_for('desk_page', deskID=deskID) }}">
-              {{ desk.deskName }}
-            </a>
-          </td>
-          <td>
-            {{language}}
-          </td>
-        </tr>
-        {% endfor %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Language</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for deskID, desk, language in desks %}
+          <tr>
+            <td>
+              <a href="{{ url_for('desk_page', deskID=deskID) }}">
+                {{ desk.deskName }}
+              </a>
+            </td>
+            <td>
+              {{language}}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
-
-      {% if current_user.is_admin %}
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-danger is-small">Delete</button>
-        </div>
-      </div>
-      {% endif %}
-    </form>
     {% endif %}
 {% endblock %}

@@ -1,28 +1,28 @@
 {% extends "layout.html" %}
 {% block title %}Edit Desk{% endblock %}
 {% block content %}
-    <h1 class="title">Edit Desk</h1>
-
+    <h1 class="h1 mb-3 font-weight-normal">Edit Desk</h1>
     <form action="" method="post" name="desk_edit">
       {{ form.csrf_token }}
 
-      <div class="field">
-        <div class="form-group">
-        <label for="deskName" class="form-control">Title</label>
-          {{ form.deskName(required=True, autofocus=True, class='input') }}
+      <div class="form-group row">
+        <label for="deskName" class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+          {{ form.deskName(required=True, autofocus=True, class='form-control',placeholder='title') }}
         </div>
-        <div class="form-group">
-          <select class="form-control" name="languageID">
+      </div>
+      <div class="form-group row">
+        <label for="languageID" class="col-sm-2 col-form-label">Language</label> 
+        <div class="col-sm-10">
+          <select class="custom-select" name="languageID">
             {% for language in languages %}
             <option value="{{language.id}}">{{language.fromLanguage}} to {{language.toLanguage}}</option>
             {% endfor %}
           </select>
         </div>
       </div>
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-primary is-small">Save</button>
-        </div>
-      </div>
+
+      <button type="submit" class="btn btn-primary mb-2">Save</button>
+
     </form>
 {% endblock %}

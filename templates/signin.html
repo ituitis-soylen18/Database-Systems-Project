@@ -1,85 +1,59 @@
 {% extends "layout.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Signin{% endblock %}
 {% block content %}
-    <section class="hero">
-      <div class="hero-body">
-        <div class="container has-text-centered">
-          <div class="column is-4 is-offset-4">
-            <h3 class="title has-text-grey">Login</h3>
-            <div class="box">
-              <form action="" method="post" name="login">
-                {{ form.csrf_token }}
+    <form class="form-signin" action="" method="post" name="login">
+      {{ form.csrf_token }}
+      <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
+      <label for="username" class="sr-only">Username</label>
+          {{ form.username(required=True, autofocus=True,
+                            class='form-control',
+                            placeholder='your username') }}
+        {% for error in form.username.errors %}
+          <p class="help has-background-warning">
+              {{ error }}
+          </p>
+        {% endfor %}
+      
+      <label for="password" class="sr-only">Password</label>
+          {{ form.password(required=True, class='form-control',
+                            placeholder='your password') }}
+        {% for error in form.password.errors %}
+          <p class="help has-background-warning">
+              {{ error }}
+          </p>
+        {% endfor %}
 
-                <div class="field">
-                  <div class="control">
-                    {{ form.username(required=True, autofocus=True,
-                                     class='input is-large',
-                                     placeholder='your username') }}
-                  </div>
-                  {% for error in form.username.errors %}
-                    <p class="help has-background-warning">
-                        {{ error }}
-                    </p>
-                  {% endfor %}
-                </div>
+      <label for="mail" class="sr-only">Mail</label>
+            {{ form.mail(required=True, autofocus=True,
+                              class='form-control',
+                              placeholder='your mail') }}
+          {% for error in form.mail.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+          {% endfor %}
 
-                <div class="field">
-                  <div class="control">
-                    {{ form.password(required=True, class='input is-large',
-                                     placeholder='your password') }}
-                  </div>
-                  {% for error in form.password.errors %}
-                    <p class="help has-background-warning">
-                        {{ error }}
-                    </p>
-                  {% endfor %}
-                </div>
+      <label for="name" class="sr-only">Name</label>
+            {{ form.firstName(autofocus=True,
+                              class='form-control',
+                              placeholder='your first name') }}
+          {% for error in form.firstName.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+          {% endfor %}
 
-                <div class="field">
-                    <div class="control">
-                      {{ form.mail(required=True, autofocus=True,
-                                       class='input is-large',
-                                       placeholder='your mail') }}
-                    </div>
-                    {% for error in form.mail.errors %}
-                      <p class="help has-background-warning">
-                          {{ error }}
-                      </p>
-                    {% endfor %}
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                      {{ form.firstName(autofocus=True,
-                                       class='input is-large',
-                                       placeholder='your firstName') }}
-                    </div>
-                    {% for error in form.firstName.errors %}
-                      <p class="help has-background-warning">
-                          {{ error }}
-                      </p>
-                    {% endfor %}
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                      {{ form.lastName( autofocus=True,
-                                       class='input is-large',
-                                       placeholder='your lastName') }}
-                    </div>
-                    {% for error in form.lastName.errors %}
-                      <p class="help has-background-warning">
-                          {{ error }}
-                      </p>
-                    {% endfor %}
-                </div>                  
-                <button class="button is-block is-info is-large is-fullwidth">
-                  Login
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      <label for="surname" class="sr-only">Surname</label>
+            {{ form.lastName( autofocus=True,
+                              class='form-control',
+                              placeholder='your last name') }}
+          {% for error in form.lastName.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+          {% endfor %}                
+      <button class="btn btn-lg btn-primary btn-block" type="submit">
+        Signin
+      </button>
+    </form>
 {% endblock %}

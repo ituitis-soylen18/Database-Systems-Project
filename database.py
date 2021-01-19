@@ -100,9 +100,9 @@ class Database:
         return user
 
     def add_card(self, card, deskID):
-        query = "INSERT INTO flashcard (word, translation, languageID) VALUES (%s, %s, NULL) RETURNING flashID"
+        query = "INSERT INTO flashcard (word, translation, languageID, image) VALUES (%s, %s, NULL, %s) RETURNING flashID"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (card.word, card.translation))
+        cursor.execute(query, (card.word, card.translation, card.image))
         flashID = cursor.fetchone()[0]
         query = "INSERT INTO cardsindesks (deskID, flashID) VALUES ( %s, %s)"
         cursor.execute(query, (deskID, flashID))
@@ -111,26 +111,26 @@ class Database:
 
     def get_cards(self, deskID):
         cards = []
-        query = "SELECT flashID, word, translation FROM flashcard NATURAL JOIN cardsindesks WHERE (deskID = %s) ORDER BY flashID"
+        query = "SELECT flashID, word, translation, image FROM flashcard NATURAL JOIN cardsindesks WHERE (deskID = %s) ORDER BY flashID"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (deskID, ))
-        for flashID, word, translation in cursor:
-                card = Flashcard(word, translation)
+        for flashID, word, translation, image in cursor:
+                card = Flashcard(word, translation, image)
                 cards.append((flashID, card))
         return cards
 
     def get_card(self, flashID):
-        query = "SELECT word, translation FROM flashcard WHERE (flashID = %s)"
+        query = "SELECT word, translation, image FROM flashcard WHERE (flashID = %s)"
         cursor = self.dbfile.cursor()
         cursor.execute(query, (flashID, ))
         data = cursor.fetchone()
-        card = Flashcard(data[0], data[1])
+        card = Flashcard(data[0], data[1], data[2])
         return card
     
     def update_card(self, flashID, card):
-        query = "UPDATE flashcard SET word = %s, translation = %s WHERE (flashID = %s)"
+        query = "UPDATE flashcard SET word = %s, translation = %s, image = %s WHERE (flashID = %s)"
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (card.word, card.translation, flashID))
+        cursor.execute(query, (card.word, card.translation, card.image, flashID))
         self.dbfile.commit()
 
     def delete_card(self, flashID, deskID):

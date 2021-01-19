@@ -1,62 +1,64 @@
 {% extends "layout.html" %}
 {% block title %}Desk{% endblock %}
 {% block content %}
-    <h1 class="title">{{ desk.deskName }}</h1>
-
-    <div class="field is-grouped">
-      <p>{{languagestr}}</p>
-    </div> 
+<div class="row">
+  <div class="col-sm"></div>
+  <div class="col-sm">
+    <h1 class="h1 mb-3 font-weight-normal">{{ desk.deskName }}</h1> 
+    <p>{{languagestr}}</p>
+  </div>
+  <div class="col-sm">
     {% if current_user.is_authenticated %}
-    <div class="field is-grouped">
-      <div class="control">
-        <a class="button is-primary is-outlined is-small"
-           href="{{ request.path }}/study">Study Desk</a>
-      </div>
-    </div>
-    {% endif %}
-    
+        <a class="btn btn-secondary float-right mb-2" href="{{ request.path }}/study">Study Desk</a>
+    {% endif %} 
+  </div>
+</div>
+
     {% if cards %}
     <form action="" method="post" name="card_list">
-      <table class="table is-striped is-fullwidth">
-        {% for flashID, card in cards %}
-        <tr>
-          <td>
-            <label class="checkbox">
-              <input type="checkbox" name="flashIDs" value="{{ flashID }}"/>
-            </label>
-            <a href="{{ request.path }}/{{ flashID}}">
-              {{ card.word }}
-              {{ card.translation}}
-            </a>
-          </td>
-        </tr>
-        {% endfor %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Word</th>
+            <th>Translations</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for flashID, card in cards %}
+            <tr>
+              <td>
+                <label class="checkbox">
+                  <input type="checkbox" name="flashIDs" value="{{ flashID }}"/>
+                </label>                                            
+              </td>
+              <td><a href="{{ request.path }}/{{ flashID}}">{{ card.word }}   </a></td>
+              <td><a href="{{ request.path }}/{{ flashID}}">{{ card.translation}}   </a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
       </table>
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-danger is-small">Delete</button>
-        </div>
-      </div>
+      <button type="submit" class="btn btn-primary mb-2">Delete Cards</button>
     </form>
     {% endif %}
 
     {% if current_user.is_authenticated %}
-    <div class="field is-grouped">
+    <div class="row"></div>
       <div class="control">
-        <a class="button is-primary is-outlined is-small"
+        <a class="btn btn-primary mb-2"
            href="{{ request.path }}/edit">Edit</a>
-        <a class="button is-primary is-outlined is-small"
+        <a class="btn btn-primary mb-2"
            href="{{ request.path }}/add_card">Add Card</a>
       </div>
-    </div>
+   
     <form action="/desks" method="post" name="delete_desk">
       <div class="field is-grouped">
         <div class="control">
-          <button class="button is-danger is-small" name="deskID" value="{{deskID}}">Delete Desk</button>
+          <button class="btn btn-primary mb-2" name="deskID" value="{{deskID}}">Delete Desk</button>
         </div>
       </div>
     </form>
+  </div>
     {% endif %}
 {% endblock %}
 

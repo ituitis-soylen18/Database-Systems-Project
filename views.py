@@ -76,6 +76,7 @@ def desk_edit_page(deskID):
 def card_page(flashID, deskID):
     db = current_app.config["db"]
     card = db.get_card(flashID)
+    print("----------", card.image)
     if card is None:
         abort(404)
     return render_template("card.html", card=card)
@@ -86,7 +87,8 @@ def card_add_page(deskID):
     if form.validate_on_submit():
         word = form.data["word"]
         translation = form.data["translation"]
-        flashcard = Flashcard(word, translation)
+        image = form.photo.data
+        flashcard = Flashcard(word, translation, image)
         db = current_app.config["db"]
         flashID = db.add_card(flashcard, deskID)
         flash("Flashcard added.")
@@ -101,12 +103,15 @@ def card_edit_page(flashID, deskID):
     if form.validate_on_submit():
         word = form.data["word"]
         translation = form.data["translation"]
-        flashcard = Flashcard(word, translation)
+        image = form.data["photo"]
+        print("1!!!!!!", image)
+        flashcard = Flashcard(word, translation, image)
         db = current_app.config["db"]
         db.update_card(flashID, flashcard)
         flash("Flashcard data updated.")
         return redirect(url_for("card_page", flashID=flashID, deskID=deskID))
     form.word.data = card.word
+    form.translation.data = card.translation
     return render_template("card_edit.html", form=form)
 
 @login_required

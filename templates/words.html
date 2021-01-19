@@ -4,24 +4,26 @@
     <h1 class="title">Words</h1>
    
     {% if words %}
-    <form action="" method="post" name="card_list">
-      <table class="table is-striped is-fullwidth">
-        <th>
-            <td>Word</td>
-            <td>Part-of-speech</td>
-            <td>Last practiced</td>
-            <td>Repetition</td>
-        </th>
-        {% for word, wordform, studytimestamp, repetition in words %}
-        <tr>
-          <td>{{word}}</td>
-          <td>{{wordform}}</td>
-          <td>{{studytimestamp}}</td>
-          <td>{{repetition}}</td>
-        </tr>
-        {% endfor %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Word</th>
+            <th>Part-of-speech</th>
+            <th>Last practiced</th>
+            <th>Repetition</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for word, wordform, studytimestamp, repetition in words %}
+          <tr>
+            <td>{{word}}</td>
+            <td>{{wordform}}</td>
+            <td>{{studytimestamp}}</td>
+            <td>{{repetition}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
-    </form>
     {% endif %}
 
 {% endblock %}

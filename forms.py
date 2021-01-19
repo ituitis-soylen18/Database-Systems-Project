@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, NumberRange, Optional
 from wtforms_components import IntegerField
@@ -12,7 +13,8 @@ class DeskEditForm(FlaskForm):
 class CardEditForm(FlaskForm):
     word = StringField("Word", validators=[DataRequired()])
     translation = StringField("Translation", validators=[DataRequired()])
-
+    photo = FileField()
+    
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])

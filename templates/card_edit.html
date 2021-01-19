@@ -1,33 +1,30 @@
 {% extends "layout.html" %}
 {% block title %}Edit Card{% endblock %}
 {% block content %}
-    <h1 class="title">Add Card</h1>
-
-    <form action="" method="post" name="desk_edit">
+<h1 class="h1 mb-3 font-weight-normal">Edit Card</h1>
+    <form  action="" method="post" name="card_edit">
       {{ form.csrf_token }}
-
-      <div class="field">
-        <label for="word" class="label">Word</label>
-        <div class="control">
-          {{ form.word(required=True, autofocus=True, class='input') }}
+      
+      <div class="form-group row">
+        <label for="word" class="col-sm-2 col-form-label">Word</label>
+        <div class="col-sm-10">
+          {{ form.word(required=True, autofocus=True, class='form-control',placeholder='word') }}
         </div>
       </div>
 
-      <div class="field">
-        <label for="translation" class="label">Translation</label>
-        <div class="control">
-            {{ form.translation(required=True, autofocus=True, class='input') }}
+      <div class="form-group row">
+        <label for="translation" class="col-sm-2 col-form-label">Translation</label>
+        <div class="col-sm-10">
+            {{ form.translation(required=True, autofocus=True, class='form-control',placeholder='translation') }}
         </div>
       </div>
 
-      <div class="field">
-        <label for="img">Select image:</label>
-        <input type="file" id="img" name="img" accept="image/*">
-      </div>
-      <div class="field is-grouped">
+      <div class="custom-file">
+        <label for="photo" class="custom-file-label">Select image</label>
         <div class="control">
-          <button class="button is-primary is-small">Save</button>
+          {{ form.photo( autofocus=True, class='custom-file-input', type='file') }}
         </div>
       </div>
+      <button type="submit" class="btn btn-primary mb-2">Save</button>
     </form>
 {% endblock %}

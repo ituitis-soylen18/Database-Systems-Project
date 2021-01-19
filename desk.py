@@ -3,9 +3,10 @@ class Desk:
         self.deskName = deskName
 
 class Flashcard:
-    def __init__(self, word, translation):
+    def __init__(self, word, translation, image):
         self.word = word
         self.translation = translation
+        self.image = image
 
 class Language:
     def __init__(self, id, fromLanguage, toLanguage):
