@@ -72,7 +72,3 @@ if __name__ == "__main__":
     port = app.config.get("PORT", 5000)
     app.run()
 
-if (conn):
-    cursor.close()
-    conn.close()
-    print("PostgreSQL connection is closed")
