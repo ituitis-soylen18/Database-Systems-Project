@@ -166,7 +166,7 @@ class Database:
                 DELETE FROM cardsindesks WHERE (flashID = %s AND deskID = %s);
                 DELETE FROM studystats WHERE (flashID = %s) """
         cursor = self.dbfile.cursor()
-        cursor.execute(query, (flashID, flashID, deskID))
+        cursor.execute(query, (flashID, flashID, deskID, flashID))
         self.dbfile.commit()
 
     def study_card(self, flashID, userID):
