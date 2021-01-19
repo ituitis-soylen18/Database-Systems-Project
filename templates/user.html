@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block title %}Signin{% endblock %}
+{% block content %}
+<form class="form-signin" action="" method="post" name="login">
+    {{ form.csrf_token }}
+    <h1 class="h3 mb-3 font-weight-normal">Account</h1>
+    <div class="form-group row">
+        <label for="username" class="col-sm-3 col-form-label">Username</label>
+        <div class="col-sm-9">
+            {{ form.username(required=True, autofocus=True,
+                class='form-control',
+                placeholder='your username') }}
+        </div>    
+        {% for error in form.username.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div class="form-group row">
+        <label for="password" class="col-sm-3 col-form-label">Password</label>
+        <div class="col-sm-9">
+            {{ form.password(required=True, class='form-control',
+                            placeholder='your password') }}
+        </div>           
+        {% for error in form.password.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div class="form-group row">
+        <label for="mail" class="col-sm-3 col-form-label">Mail</label>
+        <div class="col-sm-9">
+            {{ form.mail(required=True, autofocus=True,
+                class='form-control',
+                placeholder='your mail') }}
+        </div>
+            
+            {% for error in form.mail.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+            {% endfor %}
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Name</label>
+        <div class="col-sm-9">
+            {{ form.firstName(autofocus=True,
+                class='form-control',
+                placeholder='your first name') }}
+        </div>
+            
+            {% for error in form.firstName.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+            {% endfor %}
+    </div>
+    <div class="form-group row">
+        <label for="surname" class="col-sm-3 col-form-label">Surname</label>
+        <div class="col-sm-9">
+            {{ form.lastName( autofocus=True,
+                class='form-control',
+                placeholder='your last name') }}
+        </div>
+            
+            {% for error in form.lastName.errors %}
+            <p class="help has-background-warning">
+                {{ error }}
+            </p>
+            {% endfor %}
+    </div>                
+    <button class="btn btn-lg btn-primary btn-block" type="submit">
+    Save Changes
+    </button>
+</form>
+{% endblock %}

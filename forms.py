@@ -26,5 +26,7 @@ class SigninForm(FlaskForm):
     firstName = StringField("Firstname")
     lastName = StringField("Lastname")
 
+class SearchForm(FlaskForm):
+    search = StringField("Search")
 #class StudyForm(FlaskForm):
     

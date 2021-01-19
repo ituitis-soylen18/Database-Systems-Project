@@ -3,7 +3,7 @@ from flask import current_app, render_template, request, redirect, url_for, abor
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from desk import Desk, Flashcard
 from user import User
-from forms import DeskEditForm, LoginForm, SigninForm, CardEditForm
+from forms import DeskEditForm, LoginForm, SigninForm, CardEditForm, SearchForm
 from database import Database
 from passlib.hash import pbkdf2_sha256 as hasher
 import random
@@ -15,10 +15,15 @@ def home_page():
 def desks_page():
     db = current_app.config["db"]
     if request.method == "POST":
-        deskID = request.form["deskID"]
-        db.delete_desk(int(deskID))
-        flash("Desk deleted.")
-        return redirect(url_for("desks_page"))
+        if current_user.is_admin:
+            deskID = request.form["deskID"]
+            db.delete_desk(int(deskID))
+            flash("Desk deleted.")
+            return redirect(url_for("desks_page"))
+        else:
+            deskID = request.form["deskID"]
+            db.share_desk(deskID, current_user.userID)
+            return redirect(url_for("desks_page"))
     desks = db.get_desks(current_user.userID)
     return render_template("desks.html", desks=sorted(desks))
 
@@ -27,6 +32,10 @@ def desk_page(deskID):
     desk = db.get_desk(deskID)
     if desk is None:
         abort(404)
+    if db.check_userdesk(deskID, current_user.userID):
+        current_user.is_admin = True
+    else:
+        current_user.is_admin = False
     if desk[1] is not None:
         languagestr = db.get_language(desk[1])
     else:
@@ -88,7 +97,8 @@ def card_add_page(deskID):
         word = form.data["word"]
         translation = form.data["translation"]
         image = form.photo.data
-        flashcard = Flashcard(word, translation, image)
+        wordform = request.form["wordform"]
+        flashcard = Flashcard(word, translation, image, wordform)
         db = current_app.config["db"]
         flashID = db.add_card(flashcard, deskID)
         flash("Flashcard added.")
@@ -103,9 +113,10 @@ def card_edit_page(flashID, deskID):
     if form.validate_on_submit():
         word = form.data["word"]
         translation = form.data["translation"]
-        image = form.data["photo"]
-        print("1!!!!!!", image)
-        flashcard = Flashcard(word, translation, image)
+        wordform = request.form["wordform"]
+        image = request.form["photo"]
+        print("1!!!!!!", wordform)
+        flashcard = Flashcard(word, translation, image, wordform)
         db = current_app.config["db"]
         db.update_card(flashID, flashcard)
         flash("Flashcard data updated.")
@@ -132,6 +143,17 @@ def words_page():
     db = current_app.config["db"]
     words = db.get_words(current_user.userID)
     return render_template("words.html", words = words)
+
+@login_required
+def search_page():
+    db = current_app.config["db"]
+    form = SearchForm()
+    if request.method == "POST":
+        search = form.data["search"]
+        desks = db.search_desks(search)
+        print("-----------*******", desks)
+        return render_template("search.html", form = form, desks = desks)
+    return render_template("search.html", form = form)
 
 def login_page():
     form = LoginForm()
@@ -174,3 +196,23 @@ def signin_page():
             next_page = request.args.get("next", url_for("home_page"))
             return redirect(next_page)
     return render_template("signin.html", form=form)
+
+@login_required
+def user_page():
+    form = SigninForm()
+    form.username.data = current_user.nickName
+    form.mail.data = current_user.mail
+    form.firstName.data = current_user.firstName
+    form.lastName.data = current_user.lastName
+    if form.validate_on_submit():
+        db = current_app.config["db"]
+        username = form.data["username"]
+        mail = form.data["mail"]
+        passwordHash =  hasher.hash(form.data["password"])
+        firstName = form.data["firstName"]
+        lastName = form.data["lastName"]
+        #user = User(username, passwordHash, mail, firstName, lastName)
+        db.update_user(username, passwordHash, mail, firstName, lastName, current_user.userID)
+        next_page = request.args.get("next", url_for("home_page"))
+        return redirect(next_page)
+    return render_template("user.html", form=form)

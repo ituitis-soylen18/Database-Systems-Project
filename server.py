@@ -28,7 +28,9 @@ def create_app():
     app.config.from_object("settings")
 
     app.add_url_rule("/", view_func=views.home_page)
-
+    app.add_url_rule(
+        "/user", view_func=views.user_page, methods=["GET", "POST"]
+    )
     app.add_url_rule(
         "/login", view_func=views.login_page, methods=["GET", "POST"]
     )
@@ -36,7 +38,9 @@ def create_app():
         "/signin", view_func=views.signin_page, methods=["GET", "POST"]
     )
     app.add_url_rule("/logout", view_func=views.logout_page)
-
+    app.add_url_rule(
+        "/search", view_func=views.search_page, methods=["GET", "POST"]
+    )
     app.add_url_rule(
         "/desks", view_func=views.desks_page, methods=["GET", "POST"]
     )

@@ -1,9 +1,16 @@
 {% extends "layout.html" %}
 {% block title %}Desk List{% endblock %}
 {% block content %}
-    <h1 class="cover-heading">My Desks</h1>
+
+    <form id="search-form" method="post">
+        {{ form.search( autofocus=True,
+            class='form-control',
+            placeholder='Search') }}
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
 
     {% if desks %}
+    <h1 class="cover-heading">Desks</h1>
       <table class="table">
         <thead>
           <tr>
@@ -26,8 +33,5 @@
           {% endfor %}
         </tbody>
       </table>
-    {% endif %}
-    {% if current_user.is_authenticated %}
-      <a class="btn btn-primary mb-2" href="{{ url_for('desk_add_page') }}">Add Desk</a>
     {% endif %}
 {% endblock %}

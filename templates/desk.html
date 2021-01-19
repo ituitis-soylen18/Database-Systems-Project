@@ -8,8 +8,14 @@
     <p>{{languagestr}}</p>
   </div>
   <div class="col-sm">
-    {% if current_user.is_authenticated %}
-        <a class="btn btn-secondary float-right mb-2" href="{{ request.path }}/study">Study Desk</a>
+    {% if current_user.is_admin %}
+      <a class="btn btn-secondary float-right mb-2" href="{{ request.path }}/study">Study Desk</a>
+    {% else %}
+    <form action="/desks" method="post" name="add_desk">
+      <button class="btn btn-primary mb-2" name="deskID" value="{{deskID}}">
+        <a href="{{ url_for('desks_page') }}">Add to my Desks</a>
+      </button>
+    </form>
     {% endif %} 
   </div>
 </div>
@@ -19,30 +25,36 @@
       <table class="table">
         <thead>
           <tr>
+            {% if current_user.is_admin %}
             <th>Select</th>
+            {% endif %}
             <th>Word</th>
-            <th>Translations</th>
+            <th>Translation</th>
           </tr>
         </thead>
         <tbody>
           {% for flashID, card in cards %}
             <tr>
-              <td>
+              {% if current_user.is_admin %}
+              <td>  
                 <label class="checkbox">
                   <input type="checkbox" name="flashIDs" value="{{ flashID }}"/>
                 </label>                                            
               </td>
-              <td><a href="{{ request.path }}/{{ flashID}}">{{ card.word }}   </a></td>
-              <td><a href="{{ request.path }}/{{ flashID}}">{{ card.translation}}   </a></td>
+              {% endif %}
+              <td><a href="{{ request.path }}/{{ flashID}}">{% if card.wordform %}<small>{{ card.wordform }} </small>{% endif %}{{ card.word }}</a></td>
+              <td><a href="{{ request.path }}/{{ flashID}}">{{ card.translation}}</a></td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
+      {% if current_user.is_admin %}
       <button type="submit" class="btn btn-primary mb-2">Delete Cards</button>
+      {% endif %}
     </form>
     {% endif %}
 
-    {% if current_user.is_authenticated %}
+    {% if current_user.is_admin %}
     <div class="row"></div>
       <div class="control">
         <a class="btn btn-primary mb-2"
@@ -52,11 +64,7 @@
       </div>
    
     <form action="/desks" method="post" name="delete_desk">
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="btn btn-primary mb-2" name="deskID" value="{{deskID}}">Delete Desk</button>
-        </div>
-      </div>
+      <button class="btn btn-primary mb-2" name="deskID" value="{{deskID}}">Delete Desk</button>
     </form>
   </div>
     {% endif %}

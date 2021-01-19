@@ -9,17 +9,39 @@
           <th>Word</th>
           <th>Translation</th>
           {% if card.image %}
-          <td rowspan="2"> {{card.image}}</td>
+          <td rowspan="2">  <img id="ItemPreview" src="{{card.image}}"></td>
           {% endif %}
         </tr>
      </thead>
      <tbody>
       <tr>
-        <td>{{ card.word }}</td>
+        <td><small>{{ card.wordform }} </small>{{ card.word }}</td>
         <td>{{ card.translation }}</td>
       </tr>
       </tbody>
     </table>
 
     <a class="btn btn-lg btn-primary btn-block" href="{{ request.path }}/edit">Edit Card</a>
+    <script>
+      var reader = new FileReader();
+      var img = document.getElementById("ItemPreview").src;
+      reader.readAsDataURL(img); 
+      var base64String = reader.result; 
+      document.getElementById("ItemPreview").src = "data:image/png;base64," + base64String; 
+    </script> 
 {% endblock %}
+
+<!-- binx = base64.b16decode(card.image, casefold=True)
+subprocess.run(FEHCMD, input=binx)
+
+var reader = new FileReader(); 
+    reader.readAsDataURL(blob); 
+    reader.onloadend = function () { 
+    var base64String = reader.result; 
+    console.log('Base64 String - ', base64String); 
+  
+    // Simply Print the Base64 Encoded String, 
+    // without additional data: Attributes. 
+    console.log('Base64 String without Tags- ',  
+   base64String.substr(base64String.indexOf(', ') + 1)); 
+        }  -->

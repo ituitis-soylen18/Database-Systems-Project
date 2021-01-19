@@ -16,15 +16,15 @@
     <div class="inner">
       <h3 class="masthead-brand">FlashMemory</h3>
       <nav class="nav nav-masthead justify-content-center">
-        <a class="nav-link" href="{{ url_for('home_page') }}">Home <span class="sr-only">(current)</span></a>
-        
+        <a class="nav-link" href="{{ url_for('home_page') }}">Home </a>
         {% if not current_user.is_authenticated %}
         <a class="nav-link" href="{{ url_for('login_page') }}">Log in</a>
         <a class="nav-link" href="{{ url_for('signin_page') }}">Sign in</a>
             {% else %}
               <!-- {{ current_user.username }} -->
-              <a class="nav-link" href="{{ url_for('desks_page') }}">List desks</a>
-              <a class="nav-link" href="{{ url_for('desk_add_page') }}">Add desk</a>
+              <a class="nav-link" href="{{ url_for('user_page') }}">Account</a>
+              <a class="nav-link" href="{{ url_for('desks_page') }}">List Desks</a>
+              <a class="nav-link" href="{{ url_for('search_page') }}">Search</a>
               <a class="nav-link" href="{{ url_for('words_page') }}">Words</a>
               <a class="nav-link" href="{{ url_for('logout_page') }}">Log out</a>
         {% endif %}
@@ -37,10 +37,11 @@
       {% for message in get_flashed_messages() %}
       <div class="alert alert-info">{{ message }}</div>
       {% endfor %}
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
     </main>
-    <div class="container">
-      {% block content %}{% endblock %}
-    </div>
+ 
     <footer class="mastfoot mt-auto">
       <div class="inner">
        
