@@ -19,7 +19,7 @@
         <a class="nav-link" href="{{ url_for('home_page') }}">Home </a>
         {% if not current_user.is_authenticated %}
         <a class="nav-link" href="{{ url_for('login_page') }}">Log in</a>
-        <a class="nav-link" href="{{ url_for('signin_page') }}">Sign in</a>
+        <a class="nav-link" href="{{ url_for('signin_page') }}">Sign up</a>
             {% else %}
               <!-- {{ current_user.username }} -->
               <a class="nav-link" href="{{ url_for('user_page') }}">Account</a>
