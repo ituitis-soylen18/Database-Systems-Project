@@ -8,12 +8,13 @@
     <p>{{languagestr}}</p>
   </div>
   <div class="col-sm">
-    {% if current_user.is_admin %}
+    {% if current_user.is_admin and cards %}
       <a class="btn btn-secondary float-right mb-2" href="{{ request.path }}/study">Study Desk</a>
-    {% else %}
-    <form action="/desks" method="post" name="add_desk">
+    {% endif %} 
+    {% if not current_user.is_admin %}
+    <form action="/" method="post" name="add_desk">
       <button class="btn btn-primary mb-2" name="deskID" value="{{deskID}}">
-        <a href="{{ url_for('desks_page') }}">Add to my Desks</a>
+        <a href="{{ url_for('home_page') }}">Add to my Desks</a>
       </button>
     </form>
     {% endif %} 

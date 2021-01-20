@@ -9,21 +9,22 @@ from passlib.hash import pbkdf2_sha256 as hasher
 import random
 
 def home_page():
+    if request.method == "POST":
+        db = current_app.config["db"]
+        deskID = request.form["deskID"]
+        db.share_desk(deskID, current_user.userID)
+        flash("Desk added to my desks.")
+        return redirect(url_for("desks_page"))
     return render_template("home.html")
 
 
 def desks_page():
     db = current_app.config["db"]
     if request.method == "POST":
-        if current_user.is_admin:
-            deskID = request.form["deskID"]
-            db.delete_desk(int(deskID))
-            flash("Desk deleted.")
-            return redirect(url_for("desks_page"))
-        else:
-            deskID = request.form["deskID"]
-            db.share_desk(deskID, current_user.userID)
-            return redirect(url_for("desks_page"))
+        deskID = request.form["deskID"]
+        db.delete_desk(int(deskID))
+        flash("Desk deleted.")
+        return redirect(url_for("desks_page"))
     desks = db.get_desks(current_user.userID)
     return render_template("desks.html", desks=sorted(desks))
 
@@ -183,10 +184,8 @@ def signin_page():
         db = current_app.config["db"]
         username = form.data["username"]
         mail = form.data["mail"]
-        if db.check_username(username):
+        if db.check_user(username, mail):
             flash("Username already taken.")
-        elif db.check_usermail(mail):
-            flash("There is an already registered account with given mail address.")
         else:
             passwordHash =  hasher.hash(form.data["password"])
             firstName = form.data["firstName"]

@@ -88,11 +88,14 @@ class Database:
         cursor.execute(query, (deskID, userID))
         self.dbfile.commit()
 
-    def check_username(self, nickName):
-        return False
-    
-    def check_usermail(self, mail):
-        return False
+    def check_user(self, nickName, mail):
+        query = "SELECT * FROM useraccount WHERE (nickname = %s) UNION SELECT * FROM useraccount WHERE (mail = %s)"
+        cursor = self.dbfile.cursor()
+        cursor.execute(query, (nickName, mail))
+        if cursor.fetchone() == None:
+            return False
+        else:
+            return True
     
     def add_user(self, username, passwordHash, mail, firstName, lastName):
         query = "INSERT INTO useraccount (nickName, mail, passwordHash, firstName, lastName) VALUES ( %s, %s, %s, %s, %s)"

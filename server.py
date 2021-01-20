@@ -27,7 +27,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("settings")
 
-    app.add_url_rule("/", view_func=views.home_page)
+    app.add_url_rule("/", view_func=views.home_page, methods=["GET", "POST"])
     app.add_url_rule(
         "/user", view_func=views.user_page, methods=["GET", "POST"]
     )
